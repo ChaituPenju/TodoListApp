@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,25 +32,19 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todolist.composables.TodoAppBar
 import com.example.todolist.composables.TodoListItem
-import com.example.todolist.models.TodoItem
+import com.example.todolist.data.models.TodoItem
+import com.example.todolist.viewmodels.TodoScreensViewModel
 
 @Composable
 fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
+    val viewModel: TodoScreensViewModel = hiltViewModel()
+
     var searchQuery by remember { mutableStateOf("") }
-    val todoItems by remember { mutableStateOf(listOf<TodoItem>(
-        TodoItem(
-            title = "Example Title",
-            description = "Example description is the description",
-            isFinished = false
-        ),
-        TodoItem(
-            title = "Groceries",
-            description = "Get groceries from supermarket",
-            isFinished = false
-        )
-    )) }
+    val todoItems by viewModel.todosList.collectAsState()
 
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -92,7 +87,7 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = "No Todos. Start creating by clicking on the '+' icon.",
+                    text = "Press the '+' button to add a TODO item",
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                         fontSize = 24.sp,
@@ -113,6 +108,4 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
             }
         }
     }
-
-
 }

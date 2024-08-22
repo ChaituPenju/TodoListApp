@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.todolist.models.TodoItem
+import com.example.todolist.data.models.TodoItem
 import com.example.todolist.ui.theme.TodoListTheme
 
 @Composable
@@ -42,11 +42,6 @@ fun TodoListItem(
                 text = todoItem.title,
                 style = MaterialTheme.typography.headlineSmall
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = todoItem.description,
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }
@@ -58,8 +53,6 @@ fun TodoListItemPreview() {
         TodoListItem(
             todoItem = TodoItem(
                 title = "Example Title",
-                description = "Example description is the description",
-                isFinished = false
             )
         )
     }
