@@ -15,7 +15,7 @@ interface TodoDao {
     fun getAllTodos(): Flow<List<TodoItem>>
 
     @Query("SELECT * FROM todos WHERE title LIKE :itemTitle")
-    fun getTodosByTitle(itemTitle: String): List<TodoItem>
+    suspend fun getTodosByTitle(itemTitle: String): List<TodoItem>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTodo(item: TodoItem)

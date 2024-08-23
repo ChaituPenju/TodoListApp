@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,11 +42,16 @@ import com.example.todolist.viewmodels.TodoScreensViewModel
 
 @Composable
 fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> Unit) {
-    var searchQuery by remember { mutableStateOf("") }
     var isPopupVisible by remember { mutableStateOf(false) }
 
-    val todoItems by viewModel.todosList.collectAsState()
+    // Use this if you want to get all todos from database and search locally
+    // val todoItemsAll by viewModel.searchedTodosLocally.collectAsState()
+
+    val todoItems by viewModel.searchedTodosFromDb.collectAsState()
     val isTodoSaved by viewModel.isTodoSaved.collectAsState()
+
+    val searchQuery by viewModel.searchTodoText.collectAsState()
+    val isSearching by viewModel.isSearchingTodo.collectAsState()
 
 
     Scaffold(
@@ -63,13 +69,18 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
                         .wrapContentHeight()
                         .padding(horizontal = 4.dp, vertical = 4.dp),
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = viewModel::onSearchTextChange,
                     placeholder = {
                         Text(text = "Search Todos")
                     },
                     leadingIcon = {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "Search Icon")
                     },
+                    trailingIcon = {
+                        if (isSearching) {
+                            CircularProgressIndicator()
+                        } else Unit
+                    }
                 )
             }
 
