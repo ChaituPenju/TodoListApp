@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -20,6 +21,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,25 +34,25 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todolist.composables.PopupDialog
 import com.example.todolist.composables.TodoAppBar
 import com.example.todolist.composables.TodoListItem
-import com.example.todolist.models.TodoItem
+import com.example.todolist.data.TodoSaved
+import com.example.todolist.viewmodels.TodoScreensViewModel
 
 @Composable
-fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
-    var searchQuery by remember { mutableStateOf("") }
-    val todoItems by remember { mutableStateOf(listOf<TodoItem>(
-        TodoItem(
-            title = "Example Title",
-            description = "Example description is the description",
-            isFinished = false
-        ),
-        TodoItem(
-            title = "Groceries",
-            description = "Get groceries from supermarket",
-            isFinished = false
-        )
-    )) }
+fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> Unit) {
+    var isPopupVisible by remember { mutableStateOf(false) }
+
+    // Use this if you want to get all todos from database and search locally
+    // val todoItemsAll by viewModel.searchedTodosLocally.collectAsState()
+
+    val todoItems by viewModel.searchedTodosFromDb.collectAsState()
+    val isTodoSaved by viewModel.isTodoSaved.collectAsState()
+
+    val searchQuery by viewModel.searchTodoText.collectAsState()
+    val isSearching by viewModel.isSearchingTodo.collectAsState()
+
 
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -66,13 +69,18 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
                         .wrapContentHeight()
                         .padding(horizontal = 4.dp, vertical = 4.dp),
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = viewModel::onSearchTextChange,
                     placeholder = {
                         Text(text = "Search Todos")
                     },
                     leadingIcon = {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "Search Icon")
                     },
+                    trailingIcon = {
+                        if (isSearching) {
+                            CircularProgressIndicator()
+                        } else Unit
+                    }
                 )
             }
 
@@ -86,13 +94,19 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
             }
         }
     ) { paddingValues ->
+        LaunchedEffect(key1 = isTodoSaved) {
+            if (isTodoSaved == TodoSaved.ERROR) {
+                isPopupVisible = true
+            }
+        }
+
         if (todoItems.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = "No Todos. Start creating by clicking on the '+' icon.",
+                    text = "Press the '+' button to add a TODO item",
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                         fontSize = 24.sp,
@@ -114,5 +128,13 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
         }
     }
 
-
+    PopupDialog(
+        isVisible = isPopupVisible,
+        message = "Failed to add TODO",
+        onDismiss = {
+            isPopupVisible = false
+        }
+    )
 }
+
+

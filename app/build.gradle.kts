@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
 }
 
 android {
@@ -42,6 +43,9 @@ android {
     buildFeatures {
         compose = true
     }
+    kapt {
+        correctErrorTypes = true
+    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
@@ -66,6 +70,9 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // Jetpack Compose Hilt integration
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
