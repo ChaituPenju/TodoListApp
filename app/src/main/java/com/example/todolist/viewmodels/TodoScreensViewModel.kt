@@ -40,6 +40,12 @@ class TodoScreensViewModel @Inject constructor(
         }
     }
 
+    fun updateIsTodoSaved(todoSaved: TodoSaved = TodoSaved.SAVED) {
+        viewModelScope.launch {
+            _isTodoSaved.emit(todoSaved)
+        }
+    }
+
     fun insertTodo(item: TodoItem) {
         viewModelScope.launch {
             _isTodoSaved.emit(TodoSaved.SAVING)

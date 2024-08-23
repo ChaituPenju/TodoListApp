@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,19 +33,20 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.todolist.composables.PopupDialog
 import com.example.todolist.composables.TodoAppBar
 import com.example.todolist.composables.TodoListItem
-import com.example.todolist.data.models.TodoItem
+import com.example.todolist.data.TodoSaved
 import com.example.todolist.viewmodels.TodoScreensViewModel
 
 @Composable
-fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
-    val viewModel: TodoScreensViewModel = hiltViewModel()
-
+fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
+    var isPopupVisible by remember { mutableStateOf(false) }
+
     val todoItems by viewModel.todosList.collectAsState()
+    val isTodoSaved by viewModel.isTodoSaved.collectAsState()
+
 
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -81,6 +83,12 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
             }
         }
     ) { paddingValues ->
+        LaunchedEffect(key1 = isTodoSaved) {
+            if (isTodoSaved == TodoSaved.ERROR) {
+                isPopupVisible = true
+            }
+        }
+
         if (todoItems.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -108,4 +116,14 @@ fun TodoListScreen(onNavigateToAddTodo: () -> Unit) {
             }
         }
     }
+
+    PopupDialog(
+        isVisible = isPopupVisible,
+        message = "Failed to add TODO",
+        onDismiss = {
+            isPopupVisible = false
+        }
+    )
 }
+
+
