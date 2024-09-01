@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todolist.AddTodoScreen
@@ -51,19 +53,20 @@ fun AddTodoScreen(viewModel: TodoScreensViewModel, onNavigateUp: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(paddingValues = paddingValues)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(top = 44.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
         ) {
-            OutlinedTextField(
+            TextFieldTodo(
                 value = todoTitle,
                 onValueChange = { todoTitle = it },
-                label = { Text(text = stringResource(id = R.string.todo_text_field_label_title)) },
+                labelText = stringResource(id = R.string.todo_text_field_label_title),
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Button(
+            ButtonAddTodo(
                 modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-                enabled = todoTitle.isNotBlank(),
+                todoTitle = todoTitle,
                 onClick = {
                     try {
                         handleSaveTodo(title = todoTitle) {
@@ -76,21 +79,12 @@ fun AddTodoScreen(viewModel: TodoScreensViewModel, onNavigateUp: () -> Unit) {
                         onNavigateUp()
                     }
                 },
-            ) {
-                when (isTodoSaved) {
-                    TodoSaved.SAVING -> CircularProgressIndicator(
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically),
-                        color = Color.Green,
-                    )
-                    TodoSaved.SAVED -> {
-                        viewModel.resetIsTodoSaved()
-                        onNavigateUp()
-
-                        Text(text = stringResource(R.string.add_todo_button_title))
-                    }
-                    else -> Text(text = stringResource(R.string.add_todo_button_title))
-                }
-            }
+                onTodoSaved = {
+                    viewModel.resetIsTodoSaved()
+                    onNavigateUp()
+                },
+                isTodoSaved = isTodoSaved,
+            )
         }
     }
 }
@@ -101,4 +95,55 @@ fun handleSaveTodo(title: String, onSaveTodo: () -> Unit) {
     } else {
         onSaveTodo.invoke()
     }
+}
+
+
+
+/**
+ *
+ * Composable Functions
+ *
+ */
+@Composable
+fun ButtonAddTodo(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    todoTitle: String,
+    onTodoSaved: () -> Unit,
+    isTodoSaved: TodoSaved,
+) {
+    Button(
+        modifier = modifier,
+        enabled = todoTitle.isNotBlank(),
+        onClick = onClick,
+    ) {
+        when (isTodoSaved) {
+            TodoSaved.SAVING -> CircularProgressIndicator(
+                modifier = Modifier.align(alignment = Alignment.CenterVertically),
+                color = Color.Green,
+            )
+            TodoSaved.SAVED -> {
+                onTodoSaved()
+
+                Text(text = stringResource(R.string.add_todo_button_title))
+            }
+            else -> Text(text = stringResource(R.string.add_todo_button_title))
+        }
+    }
+}
+
+@Composable
+fun TextFieldTodo(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelText: String,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done
+        ),
+        label = { Text(text = labelText) },
+    )
 }

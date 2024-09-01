@@ -1,5 +1,6 @@
 package com.example.todolist.screens
 
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -22,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +62,9 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
     val searchQuery by viewModel.searchTodoText.collectAsState()
     val isSearching by viewModel.isSearchingTodo.collectAsState()
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val orientation = LocalConfiguration.current.orientation
+
 
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -66,35 +75,21 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
                     onNavigationIconClick = null,
                 )
 
-                OutlinedTextField(
+                SearchTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(horizontal = 4.dp, vertical = 4.dp),
                     value = searchQuery,
                     onValueChange = viewModel::onSearchTextChange,
-                    placeholder = {
-                        Text(text = stringResource(id = R.string.search_todos_placeholder_text))
-                    },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Filled.Search, contentDescription = "Search Icon")
-                    },
-                    trailingIcon = {
-                        if (isSearching) {
-                            CircularProgressIndicator()
-                        } else Unit
-                    }
+                    isSearching = isSearching,
                 )
             }
 
         },
         floatingActionButtonPosition = FabPosition.EndOverlay,
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigateToAddTodo() },
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Icon")
-            }
+            TodoFloatingActionButton(onClick = onNavigateToAddTodo)
         }
     ) { paddingValues ->
         DisposableEffect(key1 = isTodoSaved) {
@@ -107,19 +102,19 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
             }
         }
 
+        LaunchedEffect(key1 = isSearching) {
+            if (!isSearching && orientation == ORIENTATION_LANDSCAPE) {
+                keyboardController?.hide()
+            }
+        }
+
         if (todoItems.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
+                TextIfListEmpty(
                     modifier = Modifier.align(Alignment.Center),
                     text = stringResource(id = R.string.todos_list_empty_title),
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontStyle = FontStyle.Italic,
-                    )
                 )
             }
         } else {
@@ -141,6 +136,68 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
         onDismiss = {
             isPopupVisible = false
         }
+    )
+}
+
+
+
+/**
+ *
+ * Composable functions
+ *
+ */
+
+@Composable
+fun TodoFloatingActionButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+    ) {
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Icon")
+    }
+}
+
+@Composable
+fun SearchTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isSearching: Boolean,
+) {
+    OutlinedTextField(
+        modifier = modifier,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done
+        ),
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = {
+            Text(text = stringResource(id = R.string.search_todos_placeholder_text))
+        },
+        leadingIcon = {
+            Icon(imageVector = Icons.Filled.Search, contentDescription = "Search Icon")
+        },
+        trailingIcon = {
+            if (isSearching) {
+                CircularProgressIndicator()
+            } else Unit
+        }
+    )
+}
+
+@Composable
+fun TextIfListEmpty(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        textAlign = TextAlign.Center,
+        style = TextStyle(
+            fontSize = 24.sp,
+            color = MaterialTheme.colorScheme.secondary,
+            fontStyle = FontStyle.Italic,
+        )
     )
 }
 
