@@ -6,12 +6,14 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinxCoroutinesTest = "1.7.3"
 lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
 composeBom = "2024.08.00"
 composeNavigation = "2.8.0-rc01"
 hiltAndroid = "2.48"
 ksp = "1.9.10-1.0.13"
+mockitoCore = "5.5.0"
 roomCompiler = "2.6.1"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
@@ -46,6 +48,12 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 # Navigation
 navigation-compose = { module = "androidx.navigation:navigation-compose", name = "compose-navigation", version.ref = "composeNavigation"}
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
+
+# Coroutines Testing
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+
+# Mockito
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

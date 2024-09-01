@@ -85,6 +85,13 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    // Coroutines Testing
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Mockito
+    // For Mockito
+    testImplementation(libs.mockito.core)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
