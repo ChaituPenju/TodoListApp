@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">TodoList</string>
+
+    <!-- todo_list_screen strings -->
+    <string name="todo_list_screen_appbar_title">Todo List</string>
+    <string name="search_todos_placeholder_text">Search Todos</string>
+    <string name="todos_list_empty_title">Press the \'+\' button to add a TODO item</string>
+
+    <!-- Add_todo_screen strings -->
+    <string name="add_todo_screen_appbar_title">Add Todo Item</string>
+    <string name="todo_text_field_label_title">Write Todo Here</string>
+    <string name="add_todo_button_title">Add TODO</string>
+
+    <string name="failed_add_todo_error_message">Failed to Add TODO</string>
 </resources>
