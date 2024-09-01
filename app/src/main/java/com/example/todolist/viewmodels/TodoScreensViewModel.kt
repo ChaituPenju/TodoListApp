@@ -1,6 +1,7 @@
 package com.example.todolist.viewmodels
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolist.data.TodoRepository
@@ -100,7 +101,8 @@ class TodoScreensViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getAllTodos() {
+    @VisibleForTesting
+    suspend fun getAllTodos() {
         viewModelScope.launch {
             todoRepository.getAllTodos().collectLatest {
                 _todosList.emit(it)
