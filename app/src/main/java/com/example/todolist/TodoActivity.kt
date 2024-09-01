@@ -1,6 +1,7 @@
 package com.example.todolist
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.core.view.WindowCompat
@@ -10,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.todolist.data.TodoSaved
 import com.example.todolist.screens.AddTodoScreen
 import com.example.todolist.screens.TodoListScreen
 import com.example.todolist.ui.theme.TodoListTheme
@@ -47,8 +49,9 @@ class MainActivity : FragmentActivity() {
                         AddTodoScreen(
                             viewModel = viewModel,
                             onNavigateUp = {
-                            navController.navigateUp()
-                        })
+                                navController.navigateUp()
+                            },
+                        )
                     }
                 }
             }

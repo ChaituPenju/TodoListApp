@@ -114,6 +114,10 @@ class TodoScreensViewModel @Inject constructor(
         }
     }
 
+    fun resetIsTodoSaved() {
+        updateIsTodoSaved(todoSaved = TodoSaved.INITIAL)
+    }
+
     fun onSearchTextChange(text: String) {
         _searchTodoText.value = text
     }

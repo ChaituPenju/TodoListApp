@@ -21,7 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.todolist.R
 import com.example.todolist.composables.PopupDialog
 import com.example.todolist.composables.TodoAppBar
 import com.example.todolist.composables.TodoListItem
@@ -47,8 +50,8 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
     // Use this if you want to get all todos from database and search locally
     // val todoItemsAll by viewModel.searchedTodosLocally.collectAsState()
 
-    val todoItems by viewModel.searchedTodosFromDb.collectAsState()
-    val isTodoSaved by viewModel.isTodoSaved.collectAsState()
+    val todoItems by viewModel.searchedTodosFromDb.collectAsStateWithLifecycle()
+    val isTodoSaved by viewModel.isTodoSaved.collectAsStateWithLifecycle()
 
     val searchQuery by viewModel.searchTodoText.collectAsState()
     val isSearching by viewModel.isSearchingTodo.collectAsState()
@@ -59,7 +62,7 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
         topBar = {
             Column {
                 TodoAppBar(
-                    title = "Todo List",
+                    title = stringResource(id = R.string.todo_list_screen_appbar_title),
                     onNavigationIconClick = null,
                 )
 
@@ -71,7 +74,7 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
                     value = searchQuery,
                     onValueChange = viewModel::onSearchTextChange,
                     placeholder = {
-                        Text(text = "Search Todos")
+                        Text(text = stringResource(id = R.string.search_todos_placeholder_text))
                     },
                     leadingIcon = {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "Search Icon")
@@ -94,9 +97,13 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
             }
         }
     ) { paddingValues ->
-        LaunchedEffect(key1 = isTodoSaved) {
+        DisposableEffect(key1 = isTodoSaved) {
             if (isTodoSaved == TodoSaved.ERROR) {
                 isPopupVisible = true
+            }
+
+            onDispose {
+                viewModel.resetIsTodoSaved()
             }
         }
 
@@ -106,7 +113,7 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = "Press the '+' button to add a TODO item",
+                    text = stringResource(id = R.string.todos_list_empty_title),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                         fontSize = 24.sp,
@@ -130,7 +137,7 @@ fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> U
 
     PopupDialog(
         isVisible = isPopupVisible,
-        message = "Failed to add TODO",
+        message = stringResource(id = R.string.failed_add_todo_error_message),
         onDismiss = {
             isPopupVisible = false
         }
