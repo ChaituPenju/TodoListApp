@@ -20,5 +20,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "TodoList"
+
 include(":app")
- 
+include(":feature:todo:data")
+include(":feature:todo:domain")
+include(":feature:todo:ui")
+include(":common")

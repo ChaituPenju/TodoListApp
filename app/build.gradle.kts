@@ -58,6 +58,10 @@ android {
 
 dependencies {
 
+    implementation(project(":feature:todo:data"))
+    implementation(project(":feature:todo:domain"))
+    implementation(project(":feature:todo:ui"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -89,7 +93,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 
     // Mockito
-    // For Mockito
     testImplementation(libs.mockito.core)
 
     // Testing
