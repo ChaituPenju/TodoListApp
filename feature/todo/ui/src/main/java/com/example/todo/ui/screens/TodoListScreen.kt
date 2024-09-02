@@ -1,4 +1,4 @@
-package com.example.todolist.screens
+package com.example.todo.ui.screens
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.foundation.layout.Box
@@ -42,12 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.todolist.R
-import com.example.todolist.composables.PopupDialog
-import com.example.todolist.composables.TodoAppBar
-import com.example.todolist.composables.TodoListItem
-import com.example.todolist.data.TodoSaved
-import com.example.todolist.viewmodels.TodoScreensViewModel
+import com.example.common.data.TodoSaved
+import com.example.todo.ui.R
+import com.example.todo.ui.composables.PopupDialog
+import com.example.todo.ui.composables.TodoAppBar
+import com.example.todo.ui.composables.TodoListItem
+import com.example.todo.ui.viewmodels.TodoScreensViewModel
 
 @Composable
 fun TodoListScreen(viewModel: TodoScreensViewModel, onNavigateToAddTodo: () -> Unit) {

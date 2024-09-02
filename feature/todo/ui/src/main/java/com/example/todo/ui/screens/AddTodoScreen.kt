@@ -1,4 +1,4 @@
-package com.example.todolist.screens
+package com.example.todo.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -27,13 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.todolist.AddTodoScreen
-import com.example.todolist.R
-import com.example.todolist.composables.TodoAppBar
-import com.example.todolist.data.TodoSaved
-import com.example.todolist.data.models.TodoItem
-import com.example.todolist.data.todoErrorEntry
-import com.example.todolist.viewmodels.TodoScreensViewModel
+import com.example.common.data.TodoSaved
+import com.example.common.data.todoErrorEntry
+import com.example.todo.ui.R
+import com.example.todo.ui.composables.TodoAppBar
+import com.example.todo.ui.navigation.AddTodoScreen
+import com.example.todo.ui.viewmodels.TodoScreensViewModel
 
 @Composable
 fun AddTodoScreen(viewModel: TodoScreensViewModel, onNavigateUp: () -> Unit) {
@@ -70,7 +69,7 @@ fun AddTodoScreen(viewModel: TodoScreensViewModel, onNavigateUp: () -> Unit) {
                 onClick = {
                     try {
                         handleSaveTodo(title = todoTitle) {
-                            viewModel.insertTodo(TodoItem(title = todoTitle))
+                            viewModel.insertTodo(com.example.todo.domain.models.TodoItem(title = todoTitle))
                         }
                     } catch (e: Exception) {
                         Log.e(AddTodoScreen.javaClass.simpleName, "Exception : ${e.localizedMessage}")

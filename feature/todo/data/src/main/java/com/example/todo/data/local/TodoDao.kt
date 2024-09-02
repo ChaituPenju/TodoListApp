@@ -1,4 +1,4 @@
-package com.example.todolist.data.database
+package com.example.todo.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.todolist.data.models.TodoItem
+import com.example.todo.domain.models.TodoItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,9 +1,7 @@
-package com.example.todolist.composables
+package com.example.todo.ui.composables
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Card
@@ -15,8 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.todolist.data.models.TodoItem
-import com.example.todolist.ui.theme.TodoListTheme
+import com.example.todo.domain.models.TodoItem
 
 @Composable
 fun TodoListItem(
@@ -49,11 +46,9 @@ fun TodoListItem(
 @Preview(showSystemUi = true)
 @Composable
 fun TodoListItemPreview() {
-    TodoListTheme {
-        TodoListItem(
-            todoItem = TodoItem(
-                title = "Example Title",
-            )
+    TodoListItem(
+        todoItem = TodoItem(
+            title = "Example Title",
         )
-    }
+    )
 }

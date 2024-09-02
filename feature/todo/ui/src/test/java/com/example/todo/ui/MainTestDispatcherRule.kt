@@ -1,4 +1,4 @@
-package com.example.todolist
+package com.example.todo.ui
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

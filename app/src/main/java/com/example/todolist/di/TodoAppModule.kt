@@ -1,8 +1,7 @@
-package com.example.todolist.data
+package com.example.todolist.di
 
 import android.content.Context
-import com.example.todolist.data.database.TodoDao
-import com.example.todolist.data.database.TodoDatabase
+import com.example.todolist.database.TodoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +18,7 @@ object TodoAppModule {
     }
 
     @Provides
-    fun providesDao(database: TodoDatabase): TodoDao {
+    fun providesDao(database: TodoDatabase): com.example.todo.data.local.TodoDao {
         return database.todoDao()
     }
 }

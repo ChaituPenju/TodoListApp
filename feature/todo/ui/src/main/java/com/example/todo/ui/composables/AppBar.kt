@@ -1,6 +1,5 @@
-package com.example.todolist.composables
+package com.example.todo.ui.composables
 
-import android.icu.text.CaseMap.Title
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +21,7 @@ fun TodoAppBar(
     onNavigationIconClick: (() -> Unit)?,
 ) {
     TopAppBar(
+        modifier = modifier,
         title = { Text(text = title) },
         navigationIcon = {
             onNavigationIconClick?.let { navigationIconClick ->

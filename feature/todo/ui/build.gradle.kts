@@ -71,4 +71,10 @@ dependencies {
 
     // Jetpack Compose Hilt integration
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Mockito
+    testImplementation(libs.mockito.core)
+
+    // Coroutines Testing
+    testImplementation(libs.kotlinx.coroutines.test)
 }

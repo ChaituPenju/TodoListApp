@@ -1,28 +1,24 @@
-package com.example.todolist.viewmodels
+package com.example.todo.ui.viewmodels
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todolist.data.TodoRepository
-import com.example.todolist.data.TodoSaved
-import com.example.todolist.data.models.TodoItem
+import com.example.common.data.TodoSaved
+import com.example.todo.domain.usecases.GetAllTodos
+import com.example.todo.domain.usecases.GetAllTodosByTitle
+import com.example.todo.domain.usecases.InsertOneTodo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -32,10 +28,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TodoScreensViewModel @Inject constructor(
-    private val todoRepository: TodoRepository,
+    private val getAllTodos: GetAllTodos,
+    private val getAllTodosByTitle: GetAllTodosByTitle,
+    private val insertOneTodo: InsertOneTodo,
 ) : ViewModel() {
 
-    private val _todosList: MutableStateFlow<List<TodoItem>> = MutableStateFlow(listOf())
+    private val _todosList: MutableStateFlow<List<com.example.todo.domain.models.TodoItem>> = MutableStateFlow(listOf())
 
     private val _isTodoSaved: MutableStateFlow<TodoSaved> = MutableStateFlow(TodoSaved.INITIAL)
     val isTodoSaved: StateFlow<TodoSaved> get() = _isTodoSaved.asStateFlow()
@@ -81,7 +79,7 @@ class TodoScreensViewModel @Inject constructor(
             if (text.isBlank()) 0 else 2000L
         }
         .map { text: String ->
-            todoRepository.getTodosByTitle(title = text)
+            getAllTodosByTitle(title = text)
         }.catch { e: Throwable ->
             Log.e(TodoScreensViewModel::class.simpleName, "Exception ${e.localizedMessage}")
         }
@@ -104,7 +102,7 @@ class TodoScreensViewModel @Inject constructor(
     @VisibleForTesting
     suspend fun getAllTodos() {
         viewModelScope.launch {
-            todoRepository.getAllTodos().collectLatest {
+            getAllTodos.invoke().collectLatest {
                 _todosList.emit(it)
             }
         }
@@ -124,10 +122,10 @@ class TodoScreensViewModel @Inject constructor(
         _searchTodoText.value = text
     }
 
-    fun insertTodo(item: TodoItem) {
+    fun insertTodo(item: com.example.todo.domain.models.TodoItem) {
         viewModelScope.launch {
             _isTodoSaved.emit(TodoSaved.SAVING)
-            todoRepository.insertTodo(todoItem = item)
+            insertOneTodo(todoItem = item)
 
             delay(3000)
             _isTodoSaved.emit(TodoSaved.SAVED)

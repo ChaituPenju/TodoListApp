@@ -1,9 +1,11 @@
-package com.example.todolist.viewmodels
+package com.example.todo.ui.viewmodels
 
-import com.example.todolist.MainTestDispatcherRule
-import com.example.todolist.data.TodoRepository
-import com.example.todolist.data.TodoSaved
-import com.example.todolist.data.models.TodoItem
+import com.example.common.data.TodoSaved
+import com.example.todo.domain.models.TodoItem
+import com.example.todo.domain.usecases.GetAllTodos
+import com.example.todo.domain.usecases.GetAllTodosByTitle
+import com.example.todo.domain.usecases.InsertOneTodo
+import com.example.todo.ui.MainTestDispatcherRule
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,17 +30,23 @@ class TodoScreensViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainTestDispatcherRule()
 
-    private val todoRepository: TodoRepository = mock()
+    private val mockGetAllTodos: GetAllTodos = mock()
+    private val mockGetAllTodosByTitle: GetAllTodosByTitle = mock()
+    private val mockInsertOneTodo: InsertOneTodo = mock()
 
     private lateinit var viewModel: TodoScreensViewModel
 
     @Before
     fun setUp() {
-        Mockito.`when`(todoRepository.getAllTodos()).thenReturn(flow<List<TodoItem>> {
+        Mockito.`when`(mockGetAllTodos()).thenReturn(flow<List<TodoItem>> {
             listOf(TodoItem(id = 0, title = "Test Todo"))
         })
 
-        viewModel = TodoScreensViewModel(todoRepository)
+        viewModel = TodoScreensViewModel(
+            getAllTodos = mockGetAllTodos,
+            getAllTodosByTitle = mockGetAllTodosByTitle,
+            insertOneTodo = mockInsertOneTodo,
+        )
     }
 
     @Test
@@ -72,11 +80,11 @@ class TodoScreensViewModelTest {
     fun `test insertTodo`() = runTest {
         val todoItem = TodoItem(id = 1, title = "Sample Todo")
 
-        Mockito.`when`(todoRepository.insertTodo(todoItem)).thenReturn(Unit)
+        Mockito.`when`(mockInsertOneTodo(todoItem)).thenReturn(Unit)
 
         viewModel.insertTodo(todoItem)
 
-        Mockito.verify(todoRepository).insertTodo(todoItem)
+        Mockito.verify(mockInsertOneTodo).invoke(todoItem)
 
         assertEquals(TodoSaved.SAVING, viewModel.isTodoSaved.value)
 
@@ -88,10 +96,11 @@ class TodoScreensViewModelTest {
     @Test
     fun `test searchedTodosLocally`() = runTest {
         val todos = listOf(
-            TodoItem(id = 1, title = "Todo 1"), TodoItem(id = 2, title = "Todo 2")
+            TodoItem(id = 1, title = "Todo 1"),
+            TodoItem(id = 2, title = "Todo 2")
         )
 
-        Mockito.`when`(todoRepository.getAllTodos()).thenReturn(
+        Mockito.`when`(mockGetAllTodos()).thenReturn(
             flowOf(todos)
         )
 
@@ -118,11 +127,12 @@ class TodoScreensViewModelTest {
     @Test
     fun `test searchedTodosFromDb`() = runTest {
         val todos = listOf(
-            TodoItem(id = 1, title = "Todo 1"), TodoItem(id = 2, title = "Todo 2")
+            TodoItem(id = 1, title = "Todo 1"),
+            TodoItem(id = 2, title = "Todo 2")
         )
         val searchText = "2"
 
-        Mockito.`when`(todoRepository.getTodosByTitle(title = searchText)).thenReturn(
+        Mockito.`when`(mockGetAllTodosByTitle(title = searchText)).thenReturn(
             listOf(todos.last())
         )
 
